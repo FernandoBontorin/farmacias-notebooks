@@ -24,21 +24,9 @@
             weight: 0,
         }).addTo(map);
 
-        function loadJSON(name) {   
-            var xobj = new XMLHttpRequest();
-                xobj.overrideMimeType("application/json");
-            xobj.open('GET', name, true);
-            xobj.onreadystatechange = function () {
-                if (xobj.readyState == 4 && xobj.status == "200") {
-                    return xobj.responseText;
-                }
-            };
-            xobj.send(null);  
-            }
-
-
-        var distritos = loadJSON("osm-boundaries/sp_distritos.geojson")
-        console.log(distritos);
+        fetch('https://raw.githubusercontent.com/FernandoBontorin/farmacias-notebooks/master/dados/distritos/agua%20rasa.json')
+        .then(response => response.text())
+        .then(data => {console.log(data);});
     </script>
     
 </html>
