@@ -3,6 +3,7 @@
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css" integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ==" crossorigin="" />
         <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" crossorigin=""></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js" integrity="sha512-SGWgwwRA8xZgEoKiex3UubkSkV1zSE1BS6O4pXcaxcNtUlQsOmOmhVnDwIvqGRfEmuz83tIGL13cXMZn6upPyg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="functions.js"></script>
         <style type="text/css">
             #map {
                 height: 800px;
@@ -27,7 +28,7 @@
     <body>
         <div id="map"></div>
         <div id="ano-select">
-            <input type="range" id="ano-input" name="ano" min="2017" max="2021" value="2017">
+            <label for="ano-input">Ano: </label><input type="range" id="ano-input" name="ano" min="2017" max="2021" value="2017">
         </div>
     </body>
     <script>
@@ -39,9 +40,7 @@
             weight: 0,
         }).addTo(map);
 
-        fetch('https://raw.githubusercontent.com/FernandoBontorin/farmacias-notebooks/master/dados/distritos-shapes/agua%20rasa.json')
-        .then(response => response.text())
-        .then(data => {console.log(data);});
+        plotDistrito(map, "agua rasa")
     </script>
     
 </html>
