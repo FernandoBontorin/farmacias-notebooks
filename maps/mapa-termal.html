@@ -2,6 +2,7 @@
     <head>
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css" integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ==" crossorigin="" />
         <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" crossorigin=""></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js" integrity="sha512-SGWgwwRA8xZgEoKiex3UubkSkV1zSE1BS6O4pXcaxcNtUlQsOmOmhVnDwIvqGRfEmuz83tIGL13cXMZn6upPyg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <style type="text/css">
             #map {
                 height: 800px;
@@ -10,10 +11,24 @@
                 margin-right: auto;
                 margin-top: auto;
             }
+            #ano-select {
+                width: 200px;
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 20px;
+            }
+            #ano-input {
+                width: 200px;
+                margin-left: auto;
+                margin-right: auto;
+            }
         </style>
     </head>
     <body>
         <div id="map"></div>
+        <div id="ano-select">
+            <input type="range" id="ano-input" name="ano" min="2017" max="2021" value="2017">
+        </div>
     </body>
     <script>
         var map = L.map('map').setView([-23.55236, -46.63324], 13);
@@ -24,7 +39,7 @@
             weight: 0,
         }).addTo(map);
 
-        fetch('https://raw.githubusercontent.com/FernandoBontorin/farmacias-notebooks/master/dados/distritos/agua%20rasa.json')
+        fetch('https://raw.githubusercontent.com/FernandoBontorin/farmacias-notebooks/master/dados/distritos-shapes/agua%20rasa.json')
         .then(response => response.text())
         .then(data => {console.log(data);});
     </script>
