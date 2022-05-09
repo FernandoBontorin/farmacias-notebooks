@@ -1,0 +1,150 @@
+<html>
+<head>
+    <link crossorigin="" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+          integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+          rel="stylesheet"/>
+    <script crossorigin=""
+            integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+            src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"></script>
+    <script crossorigin="anonymous"
+            integrity="sha512-SGWgwwRA8xZgEoKiex3UubkSkV1zSE1BS6O4pXcaxcNtUlQsOmOmhVnDwIvqGRfEmuz83tIGL13cXMZn6upPyg=="
+            referrerpolicy="no-referrer" src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style type="text/css">
+        #map {
+            height: 800px;
+            width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: auto;
+        }
+
+        #ano-select {
+            width: 200px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 20px;
+        }
+
+        #ano-input {
+            width: 200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="ano-select">
+    <label for="ano-input">Ano: </label><input id="ano-input" max="2021" min="2017" name="ano" type="range"
+                                               value="2017">
+</div>
+</body>
+<script>
+
+    function getConsumeBasedOnPopProfile(distritos){
+        // https://www.cdc.gov/nchs/products/databriefs/db334.htm
+        const limitOfOpacity = 0.65
+        let consumes = Array();
+        return distritos.map(distrito => {
+            distrito.consumeOfDrugsPer100m2 =
+                ((distrito.razao_residentes_0_4 + distrito.razao_residentes_5_9 +
+                    distrito.razao_residentes_10_14*2/5) * distrito.populacao_total * 0.18 +
+                (distrito.razao_residentes_10_14*3/5 + distrito.razao_residentes_15_19)
+                * distrito.populacao_total * 0.27 +
+                (distrito.razao_residentes_20_24 + distrito.razao_residentes_25_29 + distrito.razao_residentes_30_34 +
+                    distrito.razao_residentes_35_39 + distrito.razao_residentes_40_44 + distrito.razao_residentes_45_49
+                    + distrito.razao_residentes_50_54 + distrito.razao_residentes_55_59)
+                * distrito.populacao_total * 0.467 +
+                (distrito.razao_residentes_60_64 + distrito.razao_residentes_65_69 + distrito.razao_residentes_70_74 +
+                    distrito.razao_residentes_75_79 + distrito.razao_residentes_80_84 + distrito.razao_residentes_85_89
+                    + distrito.razao_residentes_90_94 + distrito.razao_residentes_95_99 + distrito.razao_residentes_100)
+                * distrito.populacao_total * 0.85) * 100 / distrito.tamanho_em_m2;
+            consumes.push(distrito.consumeOfDrugsPer100m2);
+            return distrito;
+        }).map(distrito => {
+            distrito.opacityCalcValue = distrito.consumeOfDrugsPer100m2 /
+                (consumes.reduce(function(a, b) {return Math.max(a, b);}, 0)) * limitOfOpacity;
+            return distrito;
+        })
+    }
+
+
+    let spmap = L.map("map").setView([-23.60236, -46.63324], 11);
+
+    function refreshMap() {
+        spmap.remove();
+        spmap = L.map("map").setView([-23.60236, -46.63324], 11);
+        let ano = document.getElementById("ano-input").value
+        function plotDistrito(distrito) {
+            if (distrito.ano != ano) {
+                return;
+            }
+            let name = String(distrito.distrito_pr).replace(" ", "%20") + ".json";
+            const uri = "https://raw.githubusercontent.com/FernandoBontorin/farmacias-notebooks/master/dados/distritos-shapes/";
+            fetch(uri + name)
+                .then(response => response.text())
+                .then(data => {
+                    L.polygon(JSON.parse(data).geometry.coordinates.map((e) => {
+                        return [e[1], e[0]];
+                    }), {
+                        color: "#FF0000",
+                        fillOpacity: distrito.opacityCalcValue,
+                        weight: 0.3,
+                    }).addTo(spmap);
+                });
+        }
+
+        function plotFarmacia(farmacia) {
+            L.circle([farmacia.LATITUDE, farmacia.LONGITUDE], 400, {
+                color: "#0000ff",
+                fillOpacity: 0.025,
+                weight: 0,
+            }).addTo(spmap);
+            L.circle([farmacia.LATITUDE, farmacia.LONGITUDE], 800, {
+                color: "#0000ff",
+                fillOpacity: 0.025,
+                weight: 0,
+            }).addTo(spmap);
+            L.circle([farmacia.LATITUDE, farmacia.LONGITUDE], 1600, {
+                color: "#0000ff",
+                fillOpacity: 0.025,
+                weight: 0,
+            }).addTo(spmap);
+        }
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {}).addTo(spmap);
+
+        Papa.parse(
+            "https://raw.githubusercontent.com/FernandoBontorin/farmacias-notebooks/master/dados/distritos/distritos_censo_projecoes_e_demografias.csv",
+            {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                dynamicTyping: true,
+                complete: function plotDistritos(e) {
+                    getConsumeBasedOnPopProfile(e.data).map((row) => plotDistrito(row, document.getElementById("ano-input").value))
+                }
+            }
+        )
+
+        Papa.parse(
+            `https://raw.githubusercontent.com/FernandoBontorin/farmacias-notebooks/master/dados/farmacias/tbEstabelecimentoAno${ano}.csv`,
+            {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                dynamicTyping: true,
+                complete: function plotFarmacias(e) {
+                    e.data.map((row) => plotFarmacia(row))
+                }
+            }
+        )
+    }
+
+    document.getElementById("ano-input").addEventListener("click", refreshMap, false)
+
+    refreshMap();
+
+</script>
+
+</html>
