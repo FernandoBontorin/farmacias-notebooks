@@ -35,7 +35,7 @@
 <body>
 <div id="map"></div>
 <div id="ano-select">
-    <label for="ano-input">Ano: </label><input id="ano-input" max="2021" min="2017" name="ano" type="range"
+    <label for="ano-input" id="ano-input-label">Ano: 2017</label><input id="ano-input" max="2021" min="2017" name="ano" type="range"
                                                value="2017">
 </div>
 </body>
@@ -139,6 +139,7 @@
                 }
             }
         )
+        document.getElementById("ano-input-label").innerHTML = "Ano: " + ano
     }
 
     document.getElementById("ano-input").addEventListener("click", refreshMap, false)
