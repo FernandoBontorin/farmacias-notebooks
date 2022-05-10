@@ -15,3 +15,5 @@
   * https://www.prefeitura.sp.gov.br/cidade/secretarias/licenciamento/desenvolvimento_urbano/dados_estatisticos/info_cidade/demografia/index.php?p=260265
 * PERFIL DE CONSUMO POR FAIXA ETÁRIA
   * https://www.cdc.gov/nchs/products/databriefs/db334.htm
+* CNES CRIAÇÃO
+  * https://bvsms.saude.gov.br/bvs/saudelegis/gm/2015/prt1646_02_10_2015.html
