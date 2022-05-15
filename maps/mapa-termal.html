@@ -11,32 +11,67 @@
             referrerpolicy="no-referrer" src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style type="text/css">
         #map {
-            height: 800px;
-            width: 900px;
+            height: 350px;
+            width: 500px;
             margin-left: auto;
             margin-right: auto;
             margin-top: auto;
         }
 
         #ano-select {
-            width: 200px;
             margin-left: auto;
             margin-right: auto;
             margin-top: 20px;
+            display: flex;
+            width: 320px;
         }
 
         #ano-input {
-            width: 200px;
+            width: 220px;
+            margin-left: 20px;
+        }
+        #pharmacies {
+        }
+
+        #map-color-label {
+            width: 300px;
+            height: 15px;
             margin-left: auto;
             margin-right: auto;
+            margin-top: 15px;
+            background: rgb(255,0,0);
+            background: linear-gradient(90deg, rgba(255,0,0,0.5) 0%, rgba(0,0,255,0.6) 100%);
+        }
+        #color-legend {
+            width: 430px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #pharmacies-legend {
+            width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+        }
+        .bola {
+            margin-top: 6px;
+            margin-right: 10px;
+            border-radius: 50%;
+            height: 1px;
+            width: 1px;
+            border: 1px solid #000000;
+            background-color: #000000;
         }
     </style>
 </head>
 <body>
 <div id="map"></div>
+<div id="map-color-label"></div>
+<div id="color-legend"><b>Menos acessibilidade</b><b style="margin-left: 150px">Mais acessibilidade</b></div>
+<div id="pharmacies-legend"><span class="bola"></span><b><span id="pharmacies"> Farmacias (Total 29)</span></b></div>
 <div id="ano-select">
-    <label for="ano-input" id="ano-input-label">Ano: 2017</label><input id="ano-input" max="2021" min="2017" name="ano" type="range"
-                                               value="2017">
+    <label for="ano-input" id="ano-input-label">Ano: 2017</label>
+    <input id="ano-input" max="2021" min="2017" name="ano" type="range" value="2017">
 </div>
 </body>
 <script>
@@ -69,11 +104,11 @@
     }
 
 
-    let spmap = L.map("map").setView([-23.60236, -46.63324], 11);
+    let spmap = L.map("map").setView([-23.58236, -46.63324], 1);
 
     function refreshMap() {
         spmap.remove();
-        spmap = L.map("map").setView([-23.60236, -46.63324], 11);
+        spmap = L.map("map").setView([-23.58236, -46.63324], 11);
         let ano = document.getElementById("ano-input").value
         function plotDistrito(distrito) {
             if (distrito.ano != ano) {
@@ -95,17 +130,22 @@
         }
 
         function plotFarmacia(farmacia) {
-            L.circle([farmacia.LATITUDE, farmacia.LONGITUDE], 400, {
+            L.circle([farmacia.LATITUDE, farmacia.LONGITUDE], 15, {
+                color: "#000000",
+                fillOpacity: 1,
+                weight: 0,
+            }).addTo(spmap);
+            L.circle([farmacia.LATITUDE, farmacia.LONGITUDE], 300, {
                 color: "#0000ff",
                 fillOpacity: 0.025,
                 weight: 0,
             }).addTo(spmap);
-            L.circle([farmacia.LATITUDE, farmacia.LONGITUDE], 800, {
+            L.circle([farmacia.LATITUDE, farmacia.LONGITUDE], 600, {
                 color: "#0000ff",
                 fillOpacity: 0.025,
                 weight: 0,
             }).addTo(spmap);
-            L.circle([farmacia.LATITUDE, farmacia.LONGITUDE], 1600, {
+            L.circle([farmacia.LATITUDE, farmacia.LONGITUDE], 1200, {
                 color: "#0000ff",
                 fillOpacity: 0.025,
                 weight: 0,
@@ -135,6 +175,7 @@
                 skipEmptyLines: true,
                 dynamicTyping: true,
                 complete: function plotFarmacias(e) {
+                    document.getElementById("pharmacies").innerHTML = " Farmacias (Total " +e.data.length + ")"
                     e.data.map((row) => plotFarmacia(row))
                 }
             }
