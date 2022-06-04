@@ -80,12 +80,11 @@ def cli():
     # reconfigure to run to all files
     initial_moment = datetime.date.fromisoformat("2017-08-01")
     skipped_moment = datetime.date.fromisoformat("2018-02-01")
-    test_final_moment = datetime.date.fromisoformat("2017-10-01")
     final_moment = datetime.date.fromisoformat("2022-01-01")
-    dates_urls: dict[str, str] = cnes_get_urls(skipped_moment, final_moment)
+    dates_urls: dict[str, str] = cnes_get_urls(initial_moment, final_moment)
 
     context = tempfile.gettempdir()
-    print(f"Using context {tempfile.gettempdir()}, create data warehouse from {skipped_moment.isoformat()} "
+    print(f"Using context {tempfile.gettempdir()}, create data warehouse from {initial_moment.isoformat()} "
           f"to {final_moment.isoformat()}")
     for date, url in dates_urls.items():
         download(url, f"{context}/{get_filename(url)}")
