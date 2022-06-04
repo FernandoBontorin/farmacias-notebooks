@@ -78,8 +78,7 @@ def cli():
     :return:
     """
     # reconfigure to run to all files
-    initial_moment = datetime.date.fromisoformat("2017-08-01")
-    skipped_moment = datetime.date.fromisoformat("2018-02-01")
+    initial_moment = datetime.date.fromisoformat("2018-02-01")
     final_moment = datetime.date.fromisoformat("2022-01-01")
     dates_urls: dict[str, str] = cnes_get_urls(initial_moment, final_moment)
 
